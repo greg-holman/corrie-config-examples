@@ -1,0 +1,14 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      # Read from your shell or from a .env file next to this one. Never commit the key.
+      CORRIE_CONFIG_KEY: ${CORRIE_CONFIG_KEY:?set CORRIE_CONFIG_KEY to your cfg_ key}
+    volumes:
+      - settings:/data
+    restart: unless-stopped
+
+volumes:
+  settings:

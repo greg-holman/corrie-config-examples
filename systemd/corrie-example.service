@@ -1,0 +1,27 @@
+[Unit]
+Description=Example app with its settings from Corrie Config
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+# The key lives in a root-only file. systemd reads it before starting the service,
+# so it never appears in this unit, in the process list or in the journal.
+EnvironmentFile=/etc/corrie-example/config.env
+# The last settings that loaded, kept so the app still starts if Corrie can't be reached.
+Environment=CORRIE_CONFIG_CACHE=/var/lib/corrie-example/settings.env
+StateDirectory=corrie-example
+StateDirectoryMode=0700
+DynamicUser=yes
+WorkingDirectory=/opt/corrie-example
+ExecStart=/bin/sh /opt/corrie-example/launch.sh --watch 60 -- /usr/bin/python3 -u /opt/corrie-example/app.py
+Restart=on-failure
+RestartSec=5
+
+# Optional hardening. The launcher needs only outbound HTTPS and its state folder.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

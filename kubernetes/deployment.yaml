@@ -1,0 +1,80 @@
+# Create the key first (never commit it):
+#   kubectl create secret generic corrie-config --from-literal=key=cfg_your_production_key
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: example
+  template:
+    metadata:
+      labels:
+        app: example
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        fsGroup: 10001
+      containers:
+        - name: web
+          image: registry.example.com/example:1.0
+          ports:
+            - containerPort: 8000
+          env:
+            - name: CORRIE_CONFIG_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: corrie-config
+                  key: key
+            # The last settings that loaded, kept for container restarts inside this pod.
+            - name: CORRIE_CONFIG_CACHE
+              value: /data/settings.env
+            # The launcher writes its temporary files here, since the image is read-only.
+            - name: TMPDIR
+              value: /tmp
+          volumeMounts:
+            - name: settings
+              mountPath: /data
+            - name: tmp
+              mountPath: /tmp
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+      volumes:
+        - name: settings
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: example
+spec:
+  selector:
+    app: example
+  ports:
+    - port: 80
+      targetPort: 8000

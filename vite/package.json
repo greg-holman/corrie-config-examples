@@ -1,0 +1,12 @@
+{
+  "name": "corrie-config-vite-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "sh launch.sh -- vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^8.0.0"
+  }
+}

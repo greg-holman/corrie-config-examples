@@ -1,0 +1,35 @@
+services:
+  umami:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      # Secrets stay here, read from your shell or a .env file you keep out of the repository.
+      CORRIE_CONFIG_KEY: ${CORRIE_CONFIG_KEY:?set CORRIE_CONFIG_KEY to your cfg_ key}
+      DATABASE_URL: postgresql://umami:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@db:5432/umami
+      APP_SECRET: ${APP_SECRET:?set APP_SECRET to a long random string}
+    volumes:
+      - settings:/data
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U umami -d umami"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  settings:
+  db:

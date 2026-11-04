@@ -1,0 +1,24 @@
+name: Check settings
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Download the Corrie Config launcher
+        run: curl -fsSLo "$RUNNER_TEMP/launch.sh" https://config.corrie.io/launch.sh
+
+      - name: Run the check with the production settings
+        env:
+          CORRIE_CONFIG_KEY: ${{ secrets.CORRIE_CONFIG_KEY }}
+          CORRIE_CONFIG_CACHE: ${{ runner.temp }}/corrie-config.env
+        run: sh "$RUNNER_TEMP/launch.sh" -- python3 check_settings.py

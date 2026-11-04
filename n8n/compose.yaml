@@ -1,0 +1,15 @@
+services:
+  n8n:
+    build: .
+    ports:
+      - "5678:5678"
+    environment:
+      # Secrets stay here, read from your shell or a .env file you keep out of the repository.
+      CORRIE_CONFIG_KEY: ${CORRIE_CONFIG_KEY:?set CORRIE_CONFIG_KEY to your cfg_ key}
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY:?set N8N_ENCRYPTION_KEY to a long random string}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    restart: unless-stopped
+
+volumes:
+  n8n_data:

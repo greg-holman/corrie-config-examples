@@ -1,0 +1,19 @@
+services:
+  directus:
+    build: .
+    ports:
+      - "8055:8055"
+    environment:
+      # Secrets stay here, read from your shell or a .env file you keep out of the repository.
+      CORRIE_CONFIG_KEY: ${CORRIE_CONFIG_KEY:?set CORRIE_CONFIG_KEY to your cfg_ key}
+      SECRET: ${DIRECTUS_SECRET:?set DIRECTUS_SECRET to a long random string}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?set ADMIN_EMAIL for the first admin user}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD for the first admin user}
+    volumes:
+      - directus_database:/directus/database
+      - directus_uploads:/directus/uploads
+    restart: unless-stopped
+
+volumes:
+  directus_database:
+  directus_uploads:
