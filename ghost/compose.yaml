@@ -1,0 +1,38 @@
+services:
+  ghost:
+    build: .
+    ports:
+      - "2368:2368"
+    environment:
+      # Secrets stay here, read from your shell or a .env file you keep out of the repository.
+      CORRIE_CONFIG_KEY: ${CORRIE_CONFIG_KEY:?set CORRIE_CONFIG_KEY to your cfg_ key}
+      database__connection__password: ${MYSQL_PASSWORD:?set MYSQL_PASSWORD}
+      mail__options__auth__pass: ${SMTP_PASSWORD:?set SMTP_PASSWORD}
+    volumes:
+      - content:/var/lib/ghost/content
+      - settings:/var/lib/corrie
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ghost
+      MYSQL_USER: ghost
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?set MYSQL_PASSWORD}
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+    volumes:
+      - db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u ghost -p\"$$MYSQL_PASSWORD\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+volumes:
+  content:
+  settings:
+  db:

@@ -38,6 +38,7 @@ Keep the key out of the repository. The examples read it from the environment, a
 - [Umami analytics](umami/): Run self-hosted Umami with its settings from Corrie Config: the official image with the launcher added, the database password and APP_SECRET kept out, and Umami restarted within a minute of a save. Tested example. Guide: https://config.corrie.io/docs/umami
 - [n8n workflow automation](n8n/): Run self-hosted n8n with its settings from Corrie Config: the official image with curl and the launcher added, N8N_ENCRYPTION_KEY kept out, and n8n restarted within a minute of a save. Tested example. Guide: https://config.corrie.io/docs/n8n
 - [Directus headless CMS](directus/): Run self-hosted Directus with its settings from Corrie Config: the official image with curl and the launcher added, SECRET and the admin password kept out, and Directus restarted within a minute of a save. Tested example. Guide: https://config.corrie.io/docs/directus
+- [Ghost publishing](ghost/): Run self-hosted Ghost with its settings from Corrie Config: exact names such as database__connection__host, the official image with curl and the launcher added, database and mail passwords kept out. Tested example. Guide: https://config.corrie.io/docs/ghost
 
 ## Questions
 
